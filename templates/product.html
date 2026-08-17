@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} — Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<style>
+    .product-detail-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding-bottom: 40px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 15px;
+        margin-bottom: 24px;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover {
+        color: #0f172a;
+    }
+
+    .product-detail-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 36px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 36px;
+        align-items: center;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    @media (max-width: 768px) {
+        .product-detail-card {
+            grid-template-columns: 1fr;
+            padding: 20px;
+            gap: 20px;
+        }
+    }
+
+    .product-image-box {
+        width: 100%;
+        height: 380px;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #f1f5f9;
+        position: relative;
+    }
+
+    .product-image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-badge-weight {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(6px);
+        color: #ffffff;
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .product-info-content h1 {
+        font-size: 30px;
+        font-weight: 900;
+        color: #0f172a;
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+    }
+
+    .product-cat-tag {
+        display: inline-block;
+        background: #fef3c7;
+        color: #d97706;
+        padding: 4px 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+    }
+
+    .product-meta-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        font-size: 14px;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .product-desc-text {
+        color: #475569;
+        font-size: 16px;
+        line-height: 1.7;
+        margin-bottom: 20px;
+    }
+
+    .product-composition-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 16px;
+        font-size: 14px;
+        color: #475569;
+        margin-bottom: 24px;
+        line-height: 1.5;
+    }
+
+    .product-composition-box strong {
+        color: #0f172a;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .product-bottom-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .product-price-tag {
+        font-size: 28px;
+        font-weight: 900;
+        color: #059669;
+    }
+
+    .btn-to-cart-modern {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #0f172a !important;
+        padding: 14px 28px;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 15px;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .btn-to-cart-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(245, 158, 11, 0.5);
+    }
+</style>
+
+<div class="product-detail-container">
+    <a href="{{ url_for('menu') }}" class="back-link">&larr; Назад до меню</a>
+
+    <div class="product-detail-card">
+        <!-- Картинка с бейджиком граммовки -->
+        <div class="product-image-box">
+            <img src="{{ product.file_name }}" alt="{{ product.name }}">
+            {% if product.weight %}
+            <span class="product-badge-weight">⚖️ {{ product.weight }} г</span>
+            {% endif %}
+        </div>
+
+        <!-- Информация -->
+        <div class="product-info-content">
+            {% if product.category %}
+            <span class="product-cat-tag">{{ product.category }}</span>
+            {% endif %}
+
+            <h1>{{ product.name }}</h1>
+
+            {% if product.weight %}
+            <div class="product-meta-info">
+                <span>Вага порції: <strong>{{ product.weight }} г</strong></span>
+            </div>
+            {% endif %}
+
+            <p class="product-desc-text">{{ product.description }}</p>
+
+            {% if product.composition %}
+            <div class="product-composition-box">
+                <strong>Склад страви:</strong> {{ product.composition }}
+            </div>
+            {% endif %}
+
+            <div class="product-bottom-row">
+                <div class="product-price-tag">{{ "%.2f"|format(product.price) }} грн</div>
+                <a href="{{ url_for('add_to_cart', item_id=product.id) }}" class="btn-to-cart-modern">
+                    🛒 В кошик
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

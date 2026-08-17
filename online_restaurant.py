@@ -1,25 +1,21 @@
-import os
-from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import datetime
 import math
 import requests
 
-load_dotenv()
-
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'default_fallback_secret_key')
+app.secret_key = 'super_secret_restaurant_key'
 
-TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+TELEGRAM_BOT_TOKEN = '8957930838:AAFXnwIwTnpYwy1kyHyGKC6NPTdZkRvQR24'
+TELEGRAM_CHAT_ID = '1406917090'
 
 елементи = []
 global_reservations = []
 global_orders = []
 
 def send_telegram_notification(order):
-    if not TELEGRAM_CHAT_ID or TELEGRAM_CHAT_ID == 'ВСТАВТЕ_СЮДИ_ВАШ_CHAT_ID':
-        print("⚠️ Увага: Не вказано TELEGRAM_CHAT_ID у файлі .env!")
+    if TELEGRAM_CHAT_ID == 'ВСТАВТЕ_СЮДИ_ВАШ_CHAT_ID':
+        print("⚠️ Увага: Не вказано TELEGRAM_CHAT_ID!")
         return
 
     items_text = ""
@@ -121,6 +117,7 @@ class Item:
             else:
                 self.category = 'Основне'
 
+
 елементи = [
     # --- Піца ---
     Item(id=1, name='Піца Маргарита', description='Класична піца з соковитими томатами та сиром моцарела', price=180,
@@ -144,6 +141,7 @@ class Item:
          file_name='https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500',
          composition='Шинка, шампіньйони, моцарела, томатний соус, оливки', category='Піца', is_active=True),
 
+    # --- Напої (безалкогольні та алкогольні) ---
     Item(id=10, name='Кока-Кола 250мл', description='Освіжаючий газований напій Coca-Cola в пляшці', price=45,
          weight='250',
          file_name='https://c4.wallpaperflare.com/wallpaper/912/293/109/coca-cola-cans-coca-cola-cans-wallpaper-preview.jpg',
@@ -153,7 +151,7 @@ class Item:
          file_name='https://www.shutterstock.com/image-photo/poznan-pol-apr-02-2025-260nw-2609175503.jpg',
          composition='Газована вода, цукор, лимонна кислота, натуральні ароматизатори', category='Напої',
          is_active=True),
-
+    # Додано 2 безалкогольні напої:
     Item(id=16, name='Фірмовий Лимонад Імбир-М`ята',
          description='Освіжаючий охолоджений домашній лимонад із м`ятою та імбиром', price=75, weight='400',
          file_name='https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500',
@@ -162,7 +160,7 @@ class Item:
          description='Густий та ніжний вітамінний мікс з манго та апельсинового соку', price=95, weight='300',
          file_name='https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=500',
          composition='Пюре манго, апельсиновий сік, банан, льоду крихта', category='Напої', is_active=True),
-
+    # Додано 3 алкогольні напої:
     Item(id=18, name='Коктейль Апероль Шприц',
          description='Легкий іскраристий італійський алкогольний коктейль з апельсином', price=160, weight='250',
          file_name='https://images.unsplash.com/photo-1560512823-829485b8bf24?w=500',
@@ -176,6 +174,7 @@ class Item:
          file_name='https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=500',
          composition='Вода, солод ячмінний, хміль, дріжджі пивні', category='Напої', is_active=True),
 
+    # --- Бургери ---
     Item(id=2, name='Бургер Чіз', description='Соковита яловича котлета з сиром чеддер та соусом', price=150,
          weight='350',
          file_name='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500',
@@ -199,6 +198,7 @@ class Item:
          file_name='https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?w=500',
          composition='Котлета з нуту, соус песто, авокадо, рукола, томати', category='Бургери', is_active=True),
 
+    # --- Паста ---
     Item(id=3, name='Паста Карбонара', description='Традиційна італійська паста з беконом та вершками', price=210,
          weight='300',
          file_name='https://images.unsplash.com/photo-1612874742237-6526221588e3?w=500',
@@ -220,6 +220,7 @@ class Item:
          file_name='https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=500',
          composition='Пенне, сир дорблю, моцарела, гауда, пармезан, вершки', category='Паста', is_active=True),
 
+    # --- Салати ---
     Item(id=4, name='Салат Цезар', description='Свіжий салат з курячим філе, сухариками та соусом цезар', price=160,
          weight='280',
          file_name='https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=500',
@@ -245,6 +246,7 @@ class Item:
          composition='Лосось слабосолоний, шпинат, авокадо, кедрові горішки, лимонний соус', category='Салати',
          is_active=True),
 
+    # --- Суші ---
     Item(id=5, name='Суші Сет Філадельфія', description='Великий асорті сет з лососем, крем-сиром та авокадо',
          price=420, weight='800',
          file_name='https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500',
@@ -268,6 +270,7 @@ class Item:
          file_name='https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=500',
          composition='Лосось, рис, норі', category='Суші', is_active=True),
 
+    # --- Основне ---
     Item(id=35, name='Стейк із Свинини на Грилі',
          description='Соковитий м`ясний стейк на кістці з соусом ткемалі та зеленню', price=310, weight='350',
          file_name='https://images.unsplash.com/photo-1544025162-d76694265947?w=500',
@@ -329,19 +332,22 @@ class Item:
         self.composition = composition
         self.category = category if category else 'Інше'
         self.file_name = file_name
-        self.is_active = is_active
+        self.is_active = is_active  # За замовчуванням страва одразу активна
 
 @app.route('/add_position', methods=['POST'])
 def add_position():
     global елементи
     user_data = session.get('user')
 
+    # Перевірка прав адміністратора
     if not user_data or not user_data.get('is_admin'):
         flash('Доступ заборонено!', 'danger')
         return redirect(url_for('index'))
 
+    # Генерація унікального ID
     new_id = max([i.id for i in елементи], default=0) + 1 if елементи else 1
 
+    # Отримуємо дані з форми
     name = request.form.get('name')
     description = request.form.get('description')
 
@@ -355,6 +361,7 @@ def add_position():
     category = request.form.get('category')
     file_name = request.form.get('file_name')
 
+    # Створюємо новий об'єкт із примусовим is_active=True
     new_item = Item(
         id=new_id,
         name=name,
@@ -367,6 +374,7 @@ def add_position():
         is_active=True
     )
 
+    # Додаємо в глобальний список
     елементи.append(new_item)
 
     flash(f'Страву "{name}" успішно додано!', 'success')
@@ -376,10 +384,9 @@ def add_position():
 def item_detail(item_id):
     item = next((i for i in елементи if i.id == item_id), None)
     if not item:
-        flash('Страва не знайдена', 'danger')
+        flash('Страву не знайдено!', 'danger')
         return redirect(url_for('menu'))
-    return render_template('item_detail.html', item=item)
-
+    return render_template('product.html', product=item)
 
 @app.route('/menu')
 def menu():
@@ -422,10 +429,12 @@ def menu_check():
     global елементи, global_reservations, global_orders
     user_data = session.get('user')
 
+    # 1. Перевірка адміна
     if not user_data or not user_data.get('is_admin'):
         flash('Ця сторінка доступна лише адміністратору!', 'danger')
         return redirect(url_for('index'))
 
+    # 2. ЗАВЖДИ формуємо список бронювань
     session_res = session.get('reservations', [])
     combined_res = global_reservations.copy()
     for idx, r in enumerate(session_res, start=len(global_reservations) + 1):
@@ -440,8 +449,9 @@ def menu_check():
             'created_at': r.get('created_at', '')
         })
 
-
+    # 3. Обробка дій
     if request.method == 'POST':
+        # --- Бронювання: зміна статусу ---
         if 'res_id' in request.form:
             res_id = int(request.form.get('res_id'))
             new_status = request.form.get('status')
@@ -452,7 +462,7 @@ def menu_check():
                     break
             return redirect(url_for('menu_check'))
 
-
+        # --- Бронювання: повне видалення ---
         if 'delete_res_id' in request.form:
             del_res_id = int(request.form.get('delete_res_id'))
             global_len = len(global_reservations)
@@ -470,7 +480,7 @@ def menu_check():
             flash(f'Бронювання #{del_res_id} успішно видалено!', 'danger')
             return redirect(url_for('menu_check'))
 
-
+        # --- Замовлення: прийняти або видалити ---
         if 'order_id' in request.form:
             order_id = int(request.form.get('order_id'))
             order_action = request.form.get('order_action')
@@ -485,7 +495,7 @@ def menu_check():
                     break
             return redirect(url_for('menu_check'))
 
-
+        # --- Меню: активувати / деактивувати / видалити ---
         action = request.form.get('action')
         selected_ids = request.form.getlist('selected_items')
         selected_ids = [int(i) for i in selected_ids]
@@ -509,7 +519,7 @@ def menu_check():
 
         return redirect(url_for('menu_check'))
 
-
+    # 4. GET-запит: підготовка даних для відображення
     search_query = request.args.get('q', '').strip().lower()
     status_filter = request.args.get('status', 'all')
     page = request.args.get('page', 1, type=int)
@@ -666,6 +676,7 @@ def update_order_status_post():
 @app.route('/delete_item/<int:item_id>', methods=['POST'])
 def delete_item(item_id):
     global елементи
+    # Знаходимо та видаляємо страву за її id
     елементи = [item for item in елементи if item.id != item_id]
     flash('Страву успішно видалено з меню!', 'success')
     return redirect(url_for('menu_check'))
@@ -676,21 +687,23 @@ def edit_item(item_id):
     global елементи
     user_data = session.get('user')
 
-
+    # Перевірка прав адміністратора
     if not user_data or not user_data.get('is_admin'):
         flash('Доступ заборонено!', 'danger')
         return redirect(url_for('index'))
 
-
+    # Знаходимо страву за її ID
     item = next((i for i in елементи if i.id == item_id), None)
     if not item:
         flash('Страву не знайдено!', 'danger')
         return redirect(url_for('menu_check'))
 
     if request.method == 'POST':
+        # Оновлюємо дані
         item.name = request.form.get('name')
         item.description = request.form.get('description')
 
+        # Обробка ціни з перевіркою на число
         try:
             item.price = float(request.form.get('price'))
         except (ValueError, TypeError):
@@ -700,12 +713,15 @@ def edit_item(item_id):
         item.composition = request.form.get('composition')
         item.category = request.form.get('category')
         item.file_name = request.form.get('file_name')
+
+        # Обробка чекбокса "Активна страва"
+        # Чекбокс надсилає 'on', якщо він відмічений, і нічого, якщо ні
         item.is_active = True if request.form.get('is_active') == 'on' else False
 
         flash(f'Страву "{item.name}" успішно оновлено!', 'success')
         return redirect(url_for('menu_check'))
 
-
+    # Якщо GET-запит, просто показуємо сторінку редагування
     return render_template('edit_item.html', item=item)
 
 
@@ -746,10 +762,14 @@ def add_to_cart(item_id):
     return redirect(request.referrer or url_for('menu'))
 
 
-@app.route('/cart/update/<int:item_id>/<action>')
-def update_cart_quantity(item_id, action):
+@app.route('/cart/update/<int:item_id>/<string:action>', methods=['GET', 'POST'])
+@app.route('/cart/update/<int:item_id>', methods=['GET', 'POST'])
+def update_cart_quantity(item_id, action=None):
     cart = session.get('cart', {})
     str_id = str(item_id)
+
+    if not action:
+        action = request.form.get('action')
 
     if str_id in cart:
         if action == 'increase':
@@ -790,6 +810,7 @@ def make_order():
         flash('Ваш кошик порожній!', 'warning')
         return redirect(url_for('menu'))
 
+    # Визначаємо ім'я поточного користувача через сесію або клас User
     user_data = session.get('user')
     if isinstance(user_data, dict):
         username = user_data.get('nickname') or user_data.get('name') or user_data.get('login') or 'Гість'
@@ -799,6 +820,7 @@ def make_order():
     order_items = []
     total_price = 0
     for item_id, quantity in cart_data.items():
+        # Шукаємо страву у вашому списку `елементи` (або `items` залежно від того, як названа глобальна змінна списку страв)
         item = next((i for i in елементи if str(i.id) == str(item_id)), None)
         if item:
             item_total = item.price * quantity
@@ -826,7 +848,9 @@ def make_order():
     session.pop('cart', None)
     session.modified = True
 
+    # --- ВИКОРИСТОВУЄМО ВАШУ ФУНКЦІЮ ДЛЯ TELEGRAM ---
     send_telegram_notification(new_order)
+    # -----------------------------------------------
 
     flash(f'Замовлення #{new_order_id} успішно створено!', 'success')
     return redirect(url_for('my_history'))
@@ -839,11 +863,13 @@ def user_history_page():
         flash('Будь ласка, увійдіть у систему.', 'warning')
         return redirect(url_for('index'))
 
+    # Визначаємо ім'я користувача
     if isinstance(user_data, dict):
         username = user_data.get('nickname') or user_data.get('name') or user_data.get('login') or 'Гість'
     else:
         username = 'Гість'
 
+    # Фільтруємо замовлення та бронювання для поточного користувача
     my_orders = [o for o in global_orders if o.get('user_name') == username]
     my_res = [r for r in global_reservations if r.get('name') == username]
 
