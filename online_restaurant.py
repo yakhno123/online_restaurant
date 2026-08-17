@@ -789,7 +789,7 @@ def update_cart_quantity(item_id, action=None):
     return redirect(url_for('cart'))
 
 
-@app.route('/cart/remove/<int:item_id>')
+@app.route('/cart/remove/<int:item_id>', methods=['GET', 'POST'])
 def remove_from_cart(item_id):
     cart = session.get('cart', {})
     str_id = str(item_id)
@@ -801,7 +801,6 @@ def remove_from_cart(item_id):
         flash('Страва видалена з кошика.', 'info')
 
     return redirect(url_for('cart'))
-
 
 @app.route('/make_order', methods=['GET', 'POST'])
 def make_order():
