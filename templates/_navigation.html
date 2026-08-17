@@ -1,0 +1,33 @@
+<!-- Шаблон навігації за категоріями меню (_navigation.html) -->
+<ul class="nav nav-pills justify-content-center mb-4 gap-2">
+  <li class="nav-item">
+    <a class="nav-link {% if active_category == 'all' %}active{% endif %}" href="{{ url_for('menu', category='all') }}">
+      Всі страви
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_category == 'pizza' %}active{% endif %}" href="{{ url_for('menu', category='pizza') }}">
+      🍕 Піца
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_category == 'meat' %}active{% endif %}" href="{{ url_for('menu', category='meat') }}">
+      🥩 М'ясо
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_category == 'salad' %}active{% endif %}" href="{{ url_for('menu', category='salad') }}">
+      🥗 Салати
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_category == 'drinks' %}active{% endif %}" href="{{ url_for('menu', category='drinks') }}">
+      🥤 Напої та Газировки
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_category == 'alcohol' %}active{% endif %}" href="{{ url_for('menu', category='alcohol') }}">
+      🍷 Алкоголь
+    </a>
+  </li>
+</ul>

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Редагування страви — Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow border-0 rounded-4 p-4">
+                <h2 class="fw-bold mb-4 text-dark">✏️ Редагувати страву</h2>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Назва страви</label>
+                        <input type="text" name="name" class="form-control rounded-3" value="{{ item.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Ціна (грн)</label>
+                        <input type="number" step="0.01" name="price" class="form-control rounded-3" value="{{ item.price }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Вага</label>
+                        <input type="text" name="weight" class="form-control rounded-3" value="{{ item.weight }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Склад / Інгредієнти</label>
+                        <input type="text" name="composition" class="form-control rounded-3" value="{{ item.composition }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">URL зображення</label>
+                        <input type="url" name="file_name" class="form-control rounded-3" value="{{ item.file_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Опис</label>
+                        <textarea name="description" class="form-control rounded-3" rows="3" style="resize:none;">{{ item.description }}</textarea>
+                    </div>
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" name="is_active" id="is_active" class="form-check-input" {% if item.is_active %}checked{% endif %}>
+                        <label class="form-check-label fw-semibold" for="is_active">Активна в меню</label>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">Зберегти зміни</button>
+                        <a href="{{ url_for('menu_check') }}" class="btn btn-outline-secondary rounded-pill">Скасувати</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

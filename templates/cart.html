@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+
+{% block title %}Ваш кошик — Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<style>
+    .cart-header {
+        margin-bottom: 30px;
+    }
+
+    .cart-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .cart-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 30px;
+        align-items: start;
+    }
+
+    @media (max-width: 900px) {
+        .cart-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Список товаров */
+    .cart-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .cart-item-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 18px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        transition: all 0.2s ease;
+    }
+
+    .cart-item-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .cart-item-left {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .cart-item-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 14px;
+        object-fit: cover;
+        background: #f1f5f9;
+    }
+
+    .cart-item-info h3 {
+        font-size: 17px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .cart-item-price-single {
+        font-size: 14px;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    /* Управление количеством */
+    .cart-item-actions {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+
+    .qty-picker {
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 4px;
+    }
+
+    .qty-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+    }
+
+    .qty-btn:hover {
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+    .qty-value {
+        width: 36px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 15px;
+        color: #0f172a;
+    }
+
+    .item-total-price {
+        font-size: 18px;
+        font-weight: 800;
+        color: #059669;
+        min-width: 90px;
+        text-align: right;
+    }
+
+    .btn-delete-item {
+        color: #94a3b8;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 8px;
+        border-radius: 10px;
+        transition: all 0.2s;
+    }
+
+    .btn-delete-item:hover {
+        color: #ef4444;
+        background: #fee2e2;
+    }
+
+    /* Карточка итогов и форма оформления */
+    .summary-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 90px;
+    }
+
+    .summary-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        font-size: 15px;
+        color: #64748b;
+    }
+
+    .summary-row strong {
+        color: #0f172a;
+    }
+
+    .summary-divider {
+        height: 1px;
+        background: #e2e8f0;
+        margin: 18px 0;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .summary-total span {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .summary-total strong {
+        font-size: 26px;
+        font-weight: 900;
+        color: #059669;
+    }
+
+    .checkout-form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .btn-checkout {
+        display: block;
+        width: 100%;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #ffffff !important;
+        padding: 16px;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 16px;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+        transition: all 0.3s ease;
+    }
+
+    .btn-checkout:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Пустая корзина */
+    .empty-cart {
+        text-align: center;
+        padding: 80px 20px;
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .empty-cart-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+    }
+
+    .empty-cart h2 {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .empty-cart p {
+        color: #64748b;
+        margin-bottom: 24px;
+    }
+
+    .btn-back-menu {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #0f172a;
+        color: #ffffff !important;
+        padding: 12px 24px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.2s;
+    }
+
+    .btn-back-menu:hover {
+        background: var(--primary);
+        color: #0f172a !important;
+    }
+</style>
+
+<div class="cart-header">
+    <h1 class="cart-title">🛒 Ваш кошик</h1>
+</div>
+
+{% if cart_items or items %}
+{% set active_items = cart_items if cart_items else items %}
+<div class="cart-grid">
+    <!-- Список позицій -->
+    <div class="cart-items-list">
+        {% for row in active_items %}
+        {% set dish_obj = row.dish if row.dish else row.item %}
+        <div class="cart-item-card">
+            <div class="cart-item-left">
+                <img src="{{ dish_obj.image_url or dish_obj.file_name or 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=150&q=80' }}" alt="{{ dish_obj.name }}" class="cart-item-img">
+                <div class="cart-item-info">
+                    <h3>{{ dish_obj.name }}</h3>
+                    <div class="cart-item-price-single">{{ "%.2f"|format(dish_obj.price) }} грн / шт.</div>
+                </div>
+            </div>
+
+            <div class="cart-item-actions">
+                <div class="qty-picker">
+                    <form action="{{ url_for('update_cart', dish_id=dish_obj.id) if 'update_cart' in kwargs else url_for('update_cart_quantity', item_id=dish_obj.id, action='decrease') }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="action" value="decrease">
+                        <button type="submit" class="qty-btn">&minus;</button>
+                    </form>
+
+                    <span class="qty-value">{{ row.quantity }}</span>
+
+                    <form action="{{ url_for('update_cart', dish_id=dish_obj.id) if 'update_cart' in kwargs else url_for('update_cart_quantity', item_id=dish_obj.id, action='increase') }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="action" value="increase">
+                        <button type="submit" class="qty-btn">&plus;</button>
+                    </form>
+                </div>
+
+                <div class="item-total-price">
+                    {{ "%.2f"|format((row.total_price) if row.total_price else (dish_obj.price * row.quantity)) }} грн
+                </div>
+
+                <form action="{{ url_for('remove_from_cart', dish_id=dish_obj.id) if 'remove_from_cart' in kwargs else url_for('remove_from_cart', item_id=dish_obj.id) }}" method="POST" style="margin:0;">
+                    <button type="submit" class="btn-delete-item" title="Видалити">🗑️</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Сводка заказа и форма -->
+    <div class="summary-card">
+        <h2 class="summary-title">Деталі замовлення</h2>
+
+        <form action="{{ url_for('checkout') if 'checkout' in kwargs else url_for('make_order') }}" method="POST">
+            <div class="checkout-form">
+                <div class="form-group">
+                    <label>Ім'я та Прізвище</label>
+                    <input type="text" name="full_name" class="form-input" required value="{{ current_user.nickname if current_user and current_user.is_authenticated else '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Номер телефону</label>
+                    <input type="tel" name="phone" class="form-input" placeholder="+380..." required>
+                </div>
+                <div class="form-group">
+                    <label>Адреса доставки</label>
+                    <input type="text" name="address" class="form-input" placeholder="Вулиця, будинок, квартира" required>
+                </div>
+                <div class="form-group">
+                    <label>Коментар (необов'язково)</label>
+                    <textarea name="comment" class="form-input" rows="2" style="resize:none;"></textarea>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <span>Вартість страв</span>
+                <strong>{{ "%.2f"|format(total_price) }} грн</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Доставка</span>
+                <strong style="color: #059669;">Безкоштовно</strong>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-total">
+                <span>До сплати:</span>
+                <strong>{{ "%.2f"|format(total_price) }} грн</strong>
+            </div>
+
+            <button type="submit" class="btn-checkout">
+                Оформити замовлення 🎉
+            </button>
+        </form>
+    </div>
+</div>
+
+{% else %}
+
+<div class="empty-cart">
+    <div class="empty-cart-icon">🛒</div>
+    <h2>Ваш кошик порожній</h2>
+    <p>Ви ще не додали жодної смачної страви. Перегляньте наше меню!</p>
+    <a href="{{ url_for('menu_check') }}" class="btn-back-menu">📖Перейти до меню</a>
+</div>
+
+{% endif %}
+{% endblock %}

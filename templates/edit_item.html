@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Редагувати страву — Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 40px auto; background: #ffffff; padding: 30px; border-radius: 18px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+    <h2 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 20px;">✏️ Редагувати страву: {{ item.name }}</h2>
+
+    <form method="POST">
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #334155;">Назва страви</label>
+            <input type="text" name="name" value="{{ item.name }}" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #334155;">Опис страви</label>
+            <textarea name="description" rows="3" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px;">{{ item.description }}</textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #334155;">Ціна (грн)</label>
+            <input type="number" step="0.01" name="price" value="{{ item.price }}" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #334155;">Вага / Об'єм</label>
+            <input type="text" name="weight" value="{{ item.weight }}" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #334155;">Склад інгредієнтів</label>
+            <input type="text" name="composition" value="{{ item.composition }}" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #334155;">Категорія</label>
+            <input type="text" name="category" value="{{ item.category }}" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #334155;">URL зображення</label>
+            <input type="url" name="file_name" value="{{ item.file_name }}" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px;">
+        </div>
+
+        <div style="margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" name="is_active" id="is_active" {% if item.is_active %}checked{% endif %} style="width: 18px; height: 18px;">
+            <label for="is_active" style="font-weight: 600; font-size: 14px; color: #334155; cursor: pointer; margin-bottom: 0;">Активна страва (показувати в меню)</label>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+            <button type="submit" style="background: #0ea5e9; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; flex: 1; transition: 0.2s;">Зберегти зміни</button>
+            <a href="{{ url_for('menu_check') }}" style="background: #e2e8f0; color: #334155; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-align: center; flex: 1; transition: 0.2s;">Скасувати</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

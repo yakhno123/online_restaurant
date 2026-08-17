@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Додати позицію{% endblock %}
+
+{% block content %}
+<div class="container my-4" style="max-width: 700px;">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-dark text-white fw-bold">
+      ➕ Додавання нової позиції в меню
+    </div>
+    <div class="card-body">
+      <form action="{{ url_for('add_position') }}" method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Назва страви</label>
+          <input type="text" name="name" class="form-control" required placeholder="Наприклад: Піца Чотири Сири">
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Ціна (грн)</label>
+            <input type="number" step="0.01" name="price" class="form-control" required placeholder="180">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Вага/Об'єм</label>
+            <input type="text" name="weight" class="form-control" required placeholder="400г">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Категорія</label>
+          <select name="category" class="form-select">
+            <option value="Піца">Піца</option>
+            <option value="Бургери">Бургери</option>
+            <option value="Паста">Паста</option>
+            <option value="Салати">Салати</option>
+            <option value="Суші">Суші</option>
+            <option value="Основне" selected>Основне</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">URL Фотографії</label>
+          <input type="url" name="file_name" class="form-control" placeholder="https://images.unsplash.com/...">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Склад (Інгредієнти)</label>
+          <input type="text" name="composition" class="form-control" placeholder="Моцарела, томати, базилік...">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Опис</label>
+          <textarea name="description" class="form-control" rows="3" placeholder="Короткий соковитий опис страви..."></textarea>
+        </div>
+
+        <div class="form-check mb-4">
+          <input type="checkbox" name="is_active" class="form-check-input" id="is_active" checked>
+          <label class="form-check-input-label fw-bold" for="is_active">Одразу зробити активною у меню</label>
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <a href="{{ url_for('menu_check') }}" class="btn btn-outline-secondary">Скасувати</a>
+          <button type="submit" class="btn btn-warning fw-bold">Зберегти позицію</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

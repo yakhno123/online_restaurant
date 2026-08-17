@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Мої замовлення{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h2 class="mb-4 text-center fw-bold">📦 Мої замовлення</h2>
+
+  {% if orders %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for order in orders %}
+        <div class="col">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+              <span class="fw-bold">Замовлення #{{ order.id }}</span>
+              <small class="text-light">{{ order.order_time }}</small>
+            </div>
+
+            <div class="card-body">
+              <h6 class="fw-bold mb-2">Склад замовлення:</h6>
+              <ul class="list-group list-group-flush mb-3">
+                {% for item in order.order_list %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
+                    <span>{{ item.name }} <small class="text-muted">({{ item.count }} шт.)</small></span>
+                    <span>{{ item.total }} грн</span>
+                  </li>
+                {% endfor %}
+              </ul>
+
+              <div class="d-flex justify-content-between align-items-center border-top pt-2">
+                <span class="fs-5 fw-bold text-success">Разом: {{ order.total_price }} грн</span>
+                <div class="d-flex gap-2">
+                  <a href="{{ url_for('my_order', id=order.id) }}" class="btn btn-outline-primary btn-sm">Детальніше</a>
+                  <a href="{{ url_for('delete_order', id=order.id) }}"
+                     class="btn btn-outline-danger btn-sm"
+                     onclick="return confirm('Ви дійсно бажаєте видалити це замовлення?');">
+                    Видалити
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center my-5">
+      <p class="fs-4 text-muted">У вас поки немає зроблених замовлень.</p>
+      <a href="{{ url_for('menu') }}" class="btn btn-primary">Перейти до меню</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

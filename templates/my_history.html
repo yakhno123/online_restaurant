@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Моя історія — Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 800px;">
+    <h2 style="font-weight: 800; margin-bottom: 32px; color: #0f172a;">👤 Моя історія</h2>
+
+    <!-- Блок Замовлень -->
+    <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">📦 Мої замовлення</h3>
+    {% if orders %}
+        {% for order in orders %}
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h4 style="margin: 0; font-size: 18px; font-weight: 700;">Замовлення #{{ order.id }}</h4>
+                <span style="
+                    padding: 6px 12px;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    {% if order.status == 'Виконано' %} background: #dcfce7; color: #166534;
+                    {% elif order.status == 'Доставляється' %} background: #ffedd5; color: #c2410c;
+                    {% elif order.status == 'Готується' %} background: #e0f2fe; color: #0369a1;
+                    {% else %} background: #fef9c3; color: #854d0e;
+                    {% endif %}
+                ">
+                    {{ order.status }}
+                </span>
+            </div>
+
+            <p style="color: #64748b; font-size: 13px; margin-bottom: 12px;">Дата: {{ order.order_time }}</p>
+
+            <ul style="list-style: none; padding: 0; margin: 0 0 15px 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 10px 0;">
+                {% for item in order.order_list %}
+                <li style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
+                    <span>{{ item.name }} ({{ item.count }} шт.)</span>
+                    <span style="font-weight: 600;">{{ item.total }} ₴</span>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div style="text-align: right; font-size: 16px; font-weight: 700; color: #0f172a;">
+                Сума до сплати: {{ order.total_price }} ₴
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 30px; background: #f8fafc; border-radius: 16px; color: #64748b; margin-bottom: 40px;">
+            У вас поки немає замовлень.
+        </div>
+    {% endif %}
+
+    <!-- Блок Бронювань -->
+    <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">📅 Мої бронювання</h3>
+    {% if reservations %}
+        {% for res in reservations %}
+        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-weight: 700; font-size: 16px;">{{ res.date }} о {{ res.time }}</span>
+                <span style="
+                    padding: 6px 12px;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    {% if res.status == 'Підтверджено' %} background: #dcfce7; color: #166534;
+                    {% else %} background: #fee2e2; color: #991b1b;
+                    {% endif %}
+                ">
+                    {{ res.status }}
+                </span>
+            </div>
+            <p style="margin: 0; font-size: 14px; color: #64748b;">Кількість гостей: {{ res.guests }} | Телефон: {{ res.phone }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 30px; background: #f8fafc; border-radius: 16px; color: #64748b;">
+            У вас поки немає бронювань.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

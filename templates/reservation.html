@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Бронювання Столика — Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<style>
+    .reserve-box {
+        max-width: 650px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 36px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    .reserve-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .reserve-header h1 {
+        font-size: 28px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .reserve-header p {
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="reserve-box">
+    <div class="reserve-header">
+        <h1>🍷 Бронювання Столика</h1>
+        <p>Забронюйте краще місце для вашого незабутнього вечора</p>
+    </div>
+
+    <form action="{{ url_for('reservation') }}" method="POST">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Ваше ім'я</label>
+                <input type="text" name="name" class="form-input" required value="{{ current_user.nickname if current_user.is_authenticated else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label>Телефон</label>
+                <input type="tel" name="phone" class="form-input" placeholder="+380..." required>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Дата</label>
+                <input type="date" name="date" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label>Час</label>
+                <input type="time" name="time" class="form-input" required>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Кількість гостей</label>
+                <select name="guests" class="form-input" required>
+                    <option value="1">1 особа</option>
+                    <option value="2" selected>2 особи</option>
+                    <option value="3">3 особи</option>
+                    <option value="4">4 особи</option>
+                    <option value="5">5+ осіб</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Зона / Столик</label>
+                <select name="table_zone" class="form-input">
+                    <option value="main">Основний зал</option>
+                    <option value="terrace">Тераса</option>
+                    <option value="vip">VIP-кімната</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Особливі побажання</label>
+            <textarea name="notes" class="form-input" rows="3" placeholder="Дитячий стільчик, тихе місце тощо..." style="resize: none;"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit" style="background: var(--primary); color: var(--dark); margin-top: 12px; font-weight: 700;">
+            Підтвердити бронювання
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}Адмін-панель — Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<style>
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .admin-title { font-size: 28px; font-weight: 800; color: #0f172a; }
+
+    /* Стилі для випадаючих карток (акордеон) */
+    .admin-details {
+        background: #ffffff; border-radius: 18px; border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px;
+        overflow: hidden; transition: 0.3s;
+    }
+    .admin-summary {
+        padding: 20px 24px; font-size: 18px; font-weight: 700; color: #0f172a;
+        cursor: pointer; background: #ffffff; display: flex; align-items: center;
+        justify-content: space-between; user-select: none; transition: background 0.2s;
+    }
+    .admin-summary:hover {
+        background: #f8fafc;
+    }
+    .admin-body {
+        padding: 0 24px 24px 24px;
+        border-top: 1px solid #f1f5f9;
+        background: #ffffff;
+    }
+
+    .admin-grid-inner { display: grid; grid-template-columns: 380px 1fr; gap: 32px; align-items: start; margin-top: 20px; }
+    @media (max-width: 950px) { .admin-grid-inner { grid-template-columns: 1fr; } }
+
+    .table-responsive { width: 100%; overflow-x: auto; }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th { text-align: left; padding: 12px; background: #f8fafc; color: #64748b; font-size: 13px; border-bottom: 2px solid #e2e8f0; }
+    .admin-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; vertical-align: middle; }
+
+    .btn-submit { background: #0ea5e9; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.3s; }
+    .btn-submit:hover { background: #0284c7; transform: translateY(-2px); }
+
+    .btn-action { padding: 6px 12px; border-radius: 6px; border: none; font-size: 12px; cursor: pointer; transition: 0.3s; margin-right: 5px; text-decoration: none; display: inline-block; font-weight: 600; }
+    .btn-delete { background: #fee2e2; color: #991b1b; }
+    .btn-delete:hover { background: #fecaca; }
+    .btn-edit { background: #e0f2fe; color: #0369a1; }
+    .btn-edit:hover { background: #bae6fd; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: #334155; }
+    .form-input { width: 100%; padding: 9px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+</style>
+
+<div class="admin-header">
+    <h1 class="admin-title">⚙️ Адміністративна Панель</h1>
+</div>
+
+<!-- 1. Керування меню (Додавання та Список страв) -->
+<details class="admin-details" open>
+    <summary class="admin-summary">
+        <span>🍔 Керування меню та стравами</span>
+        <span style="font-size: 14px; color: #64748b; font-weight: normal;">Натисніть, щоб згорнути / розгорнути</span>
+    </summary>
+    <div class="admin-body">
+        <div class="admin-grid-inner">
+            <!-- Додавання страви -->
+            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">➕ Додати нову страву</h3>
+                <form action="{{ url_for('add_position') }}" method="POST">
+                    <div class="form-group">
+                        <label>Назва страви</label>
+                        <input type="text" name="name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Опис страви</label>
+                        <textarea name="description" class="form-input" rows="2" placeholder="Короткий опис..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ціна (грн)</label>
+                        <input type="number" step="0.01" name="price" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Вага / Об'єм</label>
+                        <input type="text" name="weight" class="form-input" placeholder="напр. 350г">
+                    </div>
+                    <div class="form-group">
+                        <label>Склад інгредієнтів</label>
+                        <input type="text" name="composition" class="form-input" placeholder="Сир, томати...">
+                    </div>
+                    <!-- Додано поле категорії, щоб страва коректно створювалась -->
+                    <div class="form-group">
+                        <label>Категорія</label>
+                        <input type="text" name="category" class="form-input" placeholder="Наприклад: Піца, Напої...">
+                    </div>
+                    <div class="form-group">
+                        <label>URL зображення</label>
+                        <input type="url" name="file_name" class="form-input" placeholder="https://...">
+                    </div>
+                    <button type="submit" class="btn-submit">Зберегти страву</button>
+                </form>
+            </div>
+
+            <!-- Список страв -->
+            <div>
+                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; margin-top: 5px;">Список страв у меню</h3>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead><tr><th>Страва</th><th>Ціна</th><th>Вага</th><th>Дії</th></tr></thead>
+                        <tbody>
+                            {% for item in елементи or items %}
+                            <tr>
+                                <td>
+                                    <strong>{{ item.name }}</strong><br>
+                                    <small style="color:#64748b">{{ item.description[:30] if item.description else '' }}...</small>
+                                </td>
+                                <td>{{ item.price }} ₴</td>
+                                <td>{{ item.weight if item.weight else '-' }}</td>
+                                <td>
+                                    <a href="{{ url_for('edit_item', item_id=item.id) }}" class="btn-action btn-edit">Редагувати</a>
+                                    <form action="{{ url_for('delete_item', item_id=item.id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-action btn-delete" onclick="return confirm('Видалити цю страву?')">Видалити</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="4" style="text-align:center; color: #64748b;">У меню поки немає страв</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</details>
+
+<!-- 2. Замовлення людей -->
+<details class="admin-details">
+    <summary class="admin-summary">
+        <span>📦 Замовлення людей</span>
+        <span style="font-size: 14px; color: #64748b; font-weight: normal;">Активних: {{ orders|length if orders else 0 }}</span>
+    </summary>
+    <div class="admin-body" style="padding-top: 20px;">
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead><tr><th>ID / Клієнт</th><th>Сума</th><th>Статус</th><th>Дії / Зміна статусу</th></tr></thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>
+                            <strong>#{{ order.id }}</strong><br>
+                            <small style="color:#64748b">{{ order.user_name }}</small>
+                        </td>
+                        <td>{{ order.total_price }} ₴</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('update_order_status_post') }}" style="display:inline;" onchange="this.submit()">
+                                <input type="hidden" name="order_id" value="{{ order.id }}">
+                                <select name="status" class="form-input" style="padding: 6px; font-size: 13px; width: 140px;">
+                                    <option value="В обробці" {% if order.status == 'В обробці' %}selected{% endif %}>В обробці</option>
+                                    <option value="Готується" {% if order.status == 'Готується' %}selected{% endif %}>Готується 👨‍🍳</option>
+                                    <option value="Доставляється" {% if order.status == 'Доставляється' %}selected{% endif %}>Доставляється 🚗</option>
+                                    <option value="Виконано" {% if order.status == 'Виконано' %}selected{% endif %}>Виконано ✅</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" style="display:inline;">
+                                <input type="hidden" name="order_id" value="{{ order.id }}">
+                                <button type="submit" name="order_action" value="delete" class="btn-action btn-delete" onclick="return confirm('Видалити замовлення?')">Видалити</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" style="text-align:center; color: #64748b;">Замовлень немає</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</details>
+
+<!-- 3. Бронювання людей -->
+<details class="admin-details">
+    <summary class="admin-summary">
+        <span>📅 Бронювання людей</span>
+        <span style="font-size: 14px; color: #64748b; font-weight: normal;">Активних: {{ reservations|length if reservations else 0 }}</span>
+    </summary>
+    <div class="admin-body" style="padding-top: 20px;">
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead><tr><th>Клієнт</th><th>Час</th><th>Статус</th><th>Дії</th></tr></thead>
+                <tbody>
+                    {% for res in reservations %}
+                    <tr>
+                        <td>{{ res.name }}<br><small style="color:#64748b">{{ res.phone }}</small></td>
+                        <td>{{ res.date }} {{ res.time }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('update_reservation_status_post') }}" onchange="this.submit()">
+                                <input type="hidden" name="res_id" value="{{ res.id }}">
+                                <select name="status" class="form-input" style="padding: 6px; font-size: 13px; width: 145px;">
+                                    <option value="Підтверджено" {% if res.status == 'Підтверджено' %}selected{% endif %}>Підтверджено ✅</option>
+                                    <option value="Скасовано" {% if res.status == 'Скасовано' %}selected{% endif %}>Скасовано ❌</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST">
+                                <input type="hidden" name="delete_res_id" value="{{ res.id }}">
+                                <button type="submit" class="btn-action btn-delete" onclick="return confirm('Видалити бронювання?')">Видалити</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" style="text-align:center; color: #64748b;">Бронювань немає</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</details>
+{% endblock %}

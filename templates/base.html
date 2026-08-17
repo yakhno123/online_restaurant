@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Онлайн Ресторан{% endblock %}</title>
+
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --primary-hover: #d97706;
+            --secondary: #2563eb;
+            --dark: #090d16;
+            --dark-card: #1e293b;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Glassmorphic Navbar --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 12px 36px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.3px;
+            transition: transform 0.2s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-1px);
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+        }
+
+        .nav-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-link-admin {
+            color: #fbbf24 !important;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+        }
+
+        .nav-link-admin:hover {
+            background: rgba(251, 191, 36, 0.2);
+            box-shadow: 0 0 16px rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: #e2e8f0;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 4px;
+        }
+
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #6366f1, #3b82f6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .btn-logout {
+            color: #f87171 !important;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            padding: 7px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+            color: #ffffff !important;
+            border-color: #ef4444;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-auth-nav {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff !important;
+            padding: 8px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-auth-nav:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--dark) !important;
+        }
+
+        .btn-register-nav {
+            background: var(--primary);
+            color: var(--dark) !important;
+            padding: 8px 18px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-register-nav:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+        }
+
+        /* --- Контейнер --- */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* --- Сітка Меню --- */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        /* --- Картка страви --- */
+        .food-card {
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .food-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+            border-color: #cbd5e1;
+        }
+
+        .card-img-wrap {
+            position: relative;
+            width: 100%;
+            height: 210px;
+            overflow: hidden;
+            background: #f1f5f9;
+        }
+
+        .card-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .food-card:hover .card-img-wrap img {
+            transform: scale(1.05);
+        }
+
+        .weight-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .price-tag {
+            font-size: 20px;
+            font-weight: 800;
+            color: #059669;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-info {
+            padding: 8px 12px;
+            background: #f1f5f9;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-info:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-add {
+            padding: 8px 14px;
+            background: var(--secondary);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-add:hover {
+            background: #1d4ed8;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* --- Модальне вікно --- */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .auth-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-backdrop.active .auth-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--secondary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-input:focus { border-color: var(--secondary); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: var(--secondary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .alert-danger { background: #fee2e2; color: #991b1b; }
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-warning { background: #fef3c7; color: #92400e; }
+    </style>
+</head>
+<body>
+
+    <!-- Навігація -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <span class="brand-badge">🍕</span>
+            <span>Онлайн Ресторан</span>
+        </a>
+
+        <div class="nav-group">
+            <a href="{{ url_for('index') }}" class="nav-link">Головна</a>
+            <a href="{{ url_for('menu') }}" class="nav-link">Меню</a>
+            <a href="{{ url_for('cart') }}" class="nav-link">🛒 Кошик</a>
+            <a href="{{ url_for('reservation') }}" class="nav-link">🍷 Бронювання</a>
+
+            {% if current_user.is_authenticated %}
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('menu_check') }}" class="nav-link nav-link-admin">
+                        <span>⚙️</span> Адмін-панель
+                    </a>
+                {% endif %}
+
+                <!-- ДОДАНО КНОПКУ ІСТОРІЇ ДЛЯ КОРИСТУВАЧА -->
+                <a href="{{ url_for('my_history') }}" class="nav-link">📦 Моя історія</a>
+
+                <div class="user-pill">
+                    <div class="user-avatar">👤</div>
+                    <span>{{ current_user.nickname }}</span>
+                </div>
+
+                <a href="{{ url_for('logout') }}" class="btn-logout">Вийти</a>
+            {% else %}
+                <button class="btn-auth-nav" onclick="openModal('login')">Вхід</button>
+                <button class="btn-register-nav" onclick="openModal('register')">Реєстрація</button>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Повідомлення Flash -->
+    <div style="max-width: 1240px; margin: 20px auto 0; padding: 0 20px;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if not session.get('show_auth_modal') %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Основний вміст -->
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Модальне вікно -->
+    <div class="modal-backdrop" id="authModal">
+        <div class="auth-card">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+
+            <div class="auth-tabs">
+                <button class="tab-btn active" id="tabLoginBtn" onclick="switchTab('login')">Вхід</button>
+                <button class="tab-btn" id="tabRegisterBtn" onclick="switchTab('register')">Реєстрація</button>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages and session.get('show_auth_modal') %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('login') }}" method="POST" class="auth-form active" id="loginForm">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <div class="form-group">
+                    <label>E-mail або Логін</label>
+                    <input type="text" name="login" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" name="password" class="form-input" required>
+                </div>
+                <button type="submit" class="btn-submit">Увійти</button>
+            </form>
+
+            <form action="{{ url_for('register') }}" method="POST" class="auth-form" id="registerForm">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <div class="form-group">
+                    <label>Нікнейм</label>
+                    <input type="text" name="nickname" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" name="email" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" name="password" class="form-input" required>
+                </div>
+                <button type="submit" class="btn-submit" style="background: var(--primary); color: var(--dark);">Зареєструватися</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(tab = 'login') {
+            document.getElementById('authModal').classList.add('active');
+            switchTab(tab);
+        }
+        function closeModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabLoginBtn = document.getElementById('tabLoginBtn');
+            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+
+            if (tab === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+                tabLoginBtn.classList.add('active');
+                tabRegisterBtn.classList.remove('active');
+            } else {
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+                tabRegisterBtn.classList.add('active');
+                tabLoginBtn.classList.remove('active');
+            }
+        }
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        {% if session.get('show_auth_modal') %}
+            openModal('{{ session.get("auth_tab", "login") }}');
+        {% endif %}
+    </script>
+</body>
+</html>

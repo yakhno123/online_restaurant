@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Перевірка броней{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h3 class="fw-bold mb-4">🪑 Управління заброньованими столиками</h3>
+
+  <div class="table-responsive shadow-sm rounded">
+    <table class="table table-hover align-middle bg-white mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Ім'я</th>
+          <th>Телефон</th>
+          <th>Дата та Час</th>
+          <th>Гостей</th>
+          <th>Статус</th>
+          <th class="text-end">Змінити статус</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reservations %}
+          <tr>
+            <td>#{{ r.id }}</td>
+            <td class="fw-bold">{{ r.name }}</td>
+            <td>{{ r.phone }}</td>
+            <td>📅 {{ r.date }} о {{ r.time }}</td>
+            <td>{{ r.guests }} осіб</td>
+            <td>
+              {% if r.status == 'Підтверджено' %}
+                <span class="badge bg-success">Підтверджено</span>
+              {% elif r.status == 'Скасовано' %}
+                <span class="badge bg-danger">Скасовано</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">{{ r.status }}</span>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <form method="POST" action="{{ url_for('reservations_check') }}" class="d-inline-flex gap-1">
+                <input type="hidden" name="res_id" value="{{ r.id }}">
+                <button type="submit" name="status" value="Підтверджено" class="btn btn-sm btn-outline-success">Підтвердити</button>
+                <button type="submit" name="status" value="Скасовано" class="btn btn-sm btn-outline-danger">Скасувати</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center py-4 text-muted">Немає збережених броней.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

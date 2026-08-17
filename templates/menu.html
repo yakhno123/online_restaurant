@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Меню — Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<style>
+    .menu-header {
+        margin-bottom: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .menu-title-wrap h1 {
+        font-size: 32px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .menu-title-wrap p {
+        color: #64748b;
+        font-size: 15px;
+    }
+
+    .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        justify-content: space-between;
+        align-items: center;
+        background: #ffffff;
+        padding: 16px 20px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        flex: 1;
+        max-width: 450px;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 10px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+        border-color: #2563eb;
+    }
+
+    .btn-search {
+        padding: 10px 20px;
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-search:hover {
+        background: #1d4ed8;
+    }
+
+    .category-pills {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .cat-pill {
+        padding: 8px 16px;
+        border-radius: 20px;
+        background: #f1f5f9;
+        color: #0f172a;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+
+    .cat-pill:hover, .cat-pill.active {
+        background: #f59e0b;
+        color: #0f172a;
+    }
+
+    /* Сітка страв */
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+    }
+
+    .food-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        transition: all 0.2s ease;
+    }
+
+    .food-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-img-wrap {
+        position: relative;
+        height: 190px;
+        width: 100%;
+        background: #f1f5f9;
+    }
+
+    .card-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .weight-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(15, 23, 42, 0.75);
+        color: #ffffff;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+    }
+
+    .card-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .card-desc {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.5;
+        margin-bottom: 16px;
+        flex: 1;
+    }
+
+    .card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: auto;
+        padding-top: 12px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .price-tag {
+        font-size: 20px;
+        font-weight: 800;
+        color: #059669;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-info {
+        padding: 8px 12px;
+        background: #f1f5f9;
+        color: #0f172a;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background 0.2s;
+    }
+
+    .btn-info:hover {
+        background: #e2e8f0;
+    }
+
+    .btn-add {
+        padding: 8px 14px;
+        background: #2563eb;
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        background: #1d4ed8;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #ffffff;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+    }
+</style>
+
+<div class="menu-header">
+    <div class="menu-title-wrap">
+        <h1>Наше Меню</h1>
+        <p>Обирайте найкращі страви, приготовані з любов'ю та найсвіжіших інгредієнтів</p>
+    </div>
+
+    <div class="filter-bar">
+        <!-- Форма поиска сохраняет выбранную категорию -->
+        <form action="{{ url_for('menu') }}" method="GET" class="search-form">
+            {% set active_cat = current_category or selected_category %}
+            {% if active_cat %}
+                <input type="hidden" name="category" value="{{ active_cat }}">
+            {% endif %}
+            <input type="text" name="search" class="search-input" placeholder="Пошук страви..." value="{{ search_query or search or '' }}">
+            <button type="submit" class="btn-search">Шукати</button>
+        </form>
+
+        <!-- Блок выбора категорий -->
+        {% if categories %}
+        <div class="category-pills">
+            <a href="{{ url_for('menu') }}" class="cat-pill {% if not active_cat %}active{% endif %}">Усі</a>
+            {% for cat in categories %}
+                {% set cat_id = cat.id if cat.id is defined else cat %}
+                {% set cat_name = cat.name if cat.name is defined else cat %}
+                <a href="{{ url_for('menu', category=cat_id, search=search_query or search or '') }}"
+                   class="cat-pill {% if active_cat|string == cat_id|string %}active{% endif %}">
+                    {{ cat_name }}
+                </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% set menu_list = items or dishes or menu_items or [] %}
+
+{% if menu_list %}
+    <div class="menu-grid">
+        {% for item in menu_list %}
+            <div class="food-card">
+                <div class="card-img-wrap">
+                    <img src="{{ item.file_name or item.image_url or item.image or 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80' }}" alt="{{ item.name }}">
+                    {% if item.weight %}
+                        <span class="weight-badge">{{ item.weight }} г</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">{{ item.name }}</h3>
+                    <p class="card-desc">{{ (item.description or '')|truncate(90) }}</p>
+                    <div class="card-footer">
+                        <span class="price-tag">{{ "%.2f"|format(item.price|float) if item.price else '0.00' }} ₴</span>
+                        <div class="card-actions">
+                            <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn-info">Детальніше</a>
+                            <a href="{{ url_for('add_to_cart', item_id=item.id) }}" class="btn-add">+ В кошик</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <h3>Страв не знайдено 🍕</h3>
+        <p style="color: #64748b;">Спробуйте змінити параметри пошуку або обрати іншу категорію.</p>
+    </div>
+{% endif %}
+{% endblock %}

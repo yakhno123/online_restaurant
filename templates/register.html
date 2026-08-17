@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-4 font-weight-bold">📝 Реєстрація</h3>
+
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="mb-3">
+                        <label for="nickname" class="form-label">Нікнейм</label>
+                        <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Придумайте нікнейм" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email адреса</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="example@mail.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Придумайте пароль" required>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">Зареєструватися</button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <p class="text-center mb-0">
+                    Вже є акаунт? <a href="{{ url_for('login') }}">Увійти</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

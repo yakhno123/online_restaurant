@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Замовлення #{% if order %}{{ order.id }}{% endif %} - Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+                Замовлення #{% if order %}{{ order.id }}{% endif %}
+            </h1>
+            <p style="color: #64748b; font-size: 14px;">Час оформлення: {% if order %}{{ order.order_time }}{% endif %}</p>
+        </div>
+        <div>
+            <span style="background: #fef3c7; color: #92400e; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700;">
+                {% if order %}{{ order.status }}{% endif %}
+            </span>
+        </div>
+    </div>
+
+    <div style="background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(0,0,0,0.03); overflow: hidden; margin-bottom: 24px;">
+        <div style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; background: #f8fafc;">
+            <h3 style="font-size: 16px; font-weight: 700; color: #0f172a;">Деталі покупки</h3>
+        </div>
+
+        <div style="padding: 0 24px;">
+            {% if order and order.order_list %}
+                {% for item in order.order_list %}
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
+                        <div>
+                            <div style="font-weight: 700; color: #0f172a; font-size: 15px; margin-bottom: 2px;">{{ item.name }}</div>
+                            <div style="color: #64748b; font-size: 13px;">{{ item.price }} грн × {{ item.count }} шт.</div>
+                        </div>
+                        <div style="font-weight: 800; color: #059669; font-size: 16px;">
+                            {{ item.total }} грн
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div style="padding: 20px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 16px; font-weight: 600; color: #64748b;">Загальна сума:</span>
+            <span style="font-size: 22px; font-weight: 800; color: #0f172a;">{% if order %}{{ order.total_price }}{% endif %} грн</span>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: center;">
+        <a href="{{ url_for('my_orders') }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: #f1f5f9; color: var(--text); text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 14px; transition: background 0.2s;">
+            ← Усі замовлення
+        </a>
+    </div>
+
+</div>
+{% endblock %}

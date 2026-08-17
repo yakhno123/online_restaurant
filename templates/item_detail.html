@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <div class="col-md-6 bg-light d-flex align-items-center justify-content-center p-3">
+                        <img src="{{ item.file_name }}" alt="{{ item.name }}" class="img-fluid rounded-3 shadow-sm" style="max-height: 320px; object-fit: cover; width: 100%;">
+                    </div>
+                    <div class="col-md-6 d-flex flex-column">
+                        <div class="card-body d-flex flex-column justify-content-between p-4">
+                            <div>
+                                <span class="badge bg-secondary mb-2">{{ item.category }}</span>
+                                <h2 class="card-title fw-bold text-dark mb-2">{{ item.name }}</h2>
+                                <p class="text-muted small mb-3">Вага: <strong>{{ item.weight }}</strong></p>
+                                <p class="card-text text-secondary mb-3">{{ item.description }}</p>
+                                {% if item.composition %}
+                                <div class="mb-3 p-2 bg-light rounded-3">
+                                    <strong class="small text-dark d-block mb-1">Склад:</strong>
+                                    <span class="small text-muted">{{ item.composition }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div class="mb-3">
+                                    <span class="fs-3 fw-bold text-success">{{ item.price }} грн</span>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <a href="{{ url_for('add_to_cart', item_id=item.id) }}" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                                        🛒 У кошик
+                                    </a>
+                                    <a href="{{ url_for('menu') }}" class="btn btn-outline-secondary rounded-pill">
+                                        ← Назад до меню
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

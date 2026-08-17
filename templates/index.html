@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+
+{% block title %}Головна — Онлайн Ресторан{% endblock %}
+
+{% block content %}
+<style>
+    /* --- Hero Section --- */
+    .hero-section {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.88)),
+                    url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600') center/cover no-repeat;
+        border-radius: 28px;
+        padding: 70px 48px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+        margin-bottom: 50px;
+    }
+
+    .hero-content {
+        max-width: 620px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        color: var(--primary);
+        padding: 6px 16px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .hero-title {
+        font-size: 46px;
+        font-weight: 900;
+        line-height: 1.15;
+        margin-bottom: 18px;
+        letter-spacing: -1px;
+    }
+
+    .hero-desc {
+        font-size: 17px;
+        color: #94a3b8;
+        line-height: 1.6;
+        margin-bottom: 32px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary-lg {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #0f172a !important;
+        padding: 14px 28px;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary-lg:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-secondary-lg {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff !important;
+        padding: 14px 28px;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        backdrop-filter: blur(8px);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-secondary-lg:hover {
+        background: rgba(255, 255, 255, 0.18);
+        transform: translateY(-2px);
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 36px;
+        margin-top: 40px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .stat-item h4 {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .stat-item p {
+        font-size: 13px;
+        color: #94a3b8;
+        font-weight: 500;
+        margin-top: 2px;
+    }
+
+    /* --- Заголовки секцій --- */
+    .section-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .section-subtitle {
+        color: #64748b;
+        font-size: 15px;
+        margin-bottom: 30px;
+    }
+
+    /* --- Переваги --- */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 60px;
+    }
+
+    .feature-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 26px;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+        border-color: #cbd5e1;
+    }
+
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        background: #f1f5f9;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #0f172a;
+    }
+
+    .feature-card p {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.5;
+    }
+
+    /* --- Баннер Бронювання --- */
+    .booking-banner {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        border-radius: 24px;
+        padding: 44px;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 30px;
+        margin-top: 60px;
+        box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.25);
+    }
+
+    .booking-content h2 {
+        font-size: 30px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .booking-content p {
+        color: #94a3b8;
+        font-size: 15px;
+        max-width: 520px;
+    }
+</style>
+
+<!-- Hero Banner -->
+<div class="hero-section">
+    <div class="hero-content">
+        <div class="hero-badge">✨ Преміум Гастрономія</div>
+        <h1 class="hero-title">Справжній смак, що надихає щодня</h1>
+        <p class="hero-desc">
+            Авторські страви від наших шеф-кухарів, відбірні інгредієнти та швидка доставка просто до вашого столу.
+        </p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('menu') }}" class="btn-primary-lg">📖 Переглянути Меню</a>
+            <a href="{{ url_for('reservation') }}" class="btn-secondary-lg">🍷 Забронювати столик</a>
+        </div>
+
+        <div class="hero-stats">
+            <div class="stat-item">
+                <h4>30 хв</h4>
+                <p>Середній час доставки</p>
+            </div>
+            <div class="stat-item">
+                <h4>100%</h4>
+                <p>Свіжі продукти</p>
+            </div>
+            <div class="stat-item">
+                <h4>4.9 ★</h4>
+                <p>Рейтинг клієнтів</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Переваги -->
+<div style="margin-bottom: 40px;">
+    <h2 class="section-title">Чому обирають нас</h2>
+    <p class="section-subtitle">Ми дбаємо про якість кожного інгредієнта та ваш комфорт</p>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Швидка доставка</h3>
+            <p>Гарячі страви доставляються в термобоксах за 30-45 хвилин.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🥑</div>
+            <h3>Свіжі продукти</h3>
+            <p>Закуповуємо інгредієнти щоранку лише у перевірених постачальників.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👨‍🍳</div>
+            <h3>Майстерність шефів</h3>
+            <p>Кожна страва готується за унікальною авторською рецептурою.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💳</div>
+            <h3>Зручна оплата</h3>
+            <p>Розраховуйтеся зручним способом: онлайн, карткою або готівкою.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Популярні страви -->
+<div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+        <div>
+            <h2 class="section-title">🔥 Популярні страви</h2>
+            <p class="section-subtitle" style="margin-bottom: 0;">Рекомендації нашого шеф-кухаря</p>
+        </div>
+        <a href="{{ url_for('menu') }}" style="color: var(--secondary); text-decoration: none; font-weight: 700; font-size: 15px;">
+            Усе меню &rarr;
+        </a>
+    </div>
+
+    <div class="menu-grid">
+        {% for item in items %}
+            <div class="food-card">
+                <div class="card-img-wrap">
+                    <img src="{{ item.file_name }}" alt="{{ item.name }}">
+                    <span class="weight-badge">{{ item.weight }}</span>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">{{ item.name }}</h3>
+                    <p class="card-desc">{{ item.description }}</p>
+                    <div class="card-footer">
+                        <span class="price-tag">{{ item.price }} грн</span>
+                        <div class="card-actions">
+                            <a href="{{ url_for('item_detail', item_id=item.id) }}" class="btn-info">Інфо</a>
+                            <a href="{{ url_for('add_to_cart', item_id=item.id) }}" class="btn-add">В кошик</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Блок Бронювання -->
+<div class="booking-banner">
+    <div class="booking-content">
+        <h2>Плануєте особливий вечір?</h2>
+        <p>Забронюйте столик заздалегідь у нашому закладі та проведіть час із комфортом.</p>
+    </div>
+    <a href="{{ url_for('reservation') }}" class="btn-primary-lg" style="white-space: nowrap;">
+        Забронювати зараз
+    </a>
+</div>
+{% endblock %}
