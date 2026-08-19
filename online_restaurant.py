@@ -1,21 +1,27 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from datetime import datetime
+import os
 import math
 import requests
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'super_secret_restaurant_key'
-
-TELEGRAM_BOT_TOKEN = '8957930838:AAFXnwIwTnpYwy1kyHyGKC6NPTdZkRvQR24'
-TELEGRAM_CHAT_ID = '1406917090'
+app.config["TELEGRAM_BOT_TOKEN"] = os.getenv("TELEGRAM_BOT_TOKEN")
+app.config["TELEGRAM_CHAT_ID"] = os.getenv("TELEGRAM_CHAT_ID")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 елементи = []
 global_reservations = []
 global_orders = []
 
 def send_telegram_notification(order):
-    if TELEGRAM_CHAT_ID == 'ВСТАВТЕ_СЮДИ_ВАШ_CHAT_ID':
-        print("⚠️ Увага: Не вказано TELEGRAM_CHAT_ID!")
+    bot_token = app.config.get("TELEGRAM_BOT_TOKEN")
+    chat_id = app.config.get("TELEGRAM_CHAT_ID")
+
+    if not chat_id or not bot_token:
+        print("⚠️ Увага: Не вказано TELEGRAM_CHAT_ID або TELEGRAM_BOT_TOKEN!")
         return
 
     items_text = ""
@@ -29,9 +35,9 @@ def send_telegram_notification(order):
         f"📋 *Склад замовлення:*\n{items_text}"
     )
 
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     payload = {
-        'chat_id': TELEGRAM_CHAT_ID,
+        'chat_id': chat_id,
         'text': message,
         'parse_mode': 'Markdown'
     }
@@ -43,7 +49,10 @@ def send_telegram_notification(order):
 
 
 def send_telegram_reservation_notification(reservation):
-    if TELEGRAM_CHAT_ID == 'ВСТАВТЕ_СЮДИ_ВАШ_CHAT_ID':
+    bot_token = app.config.get("TELEGRAM_BOT_TOKEN")
+    chat_id = app.config.get("TELEGRAM_CHAT_ID")
+
+    if not chat_id or not bot_token:
         return
 
     message = (
@@ -56,9 +65,9 @@ def send_telegram_reservation_notification(reservation):
         f"⏱ *Час створення:* {reservation['created_at']}"
     )
 
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     payload = {
-        'chat_id': TELEGRAM_CHAT_ID,
+        'chat_id': chat_id,
         'text': message,
         'parse_mode': 'Markdown'
     }
@@ -67,7 +76,6 @@ def send_telegram_reservation_notification(reservation):
         requests.post(url, data=payload, timeout=5)
     except Exception as e:
         print(f"Помилка відправки бронювання в Telegram: {e}")
-
 
 class AnonymousUser:
     is_authenticated = False
